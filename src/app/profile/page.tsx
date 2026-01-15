@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { ArrowLeft, Mail, Calendar } from "lucide-react";
+import { ArrowLeft, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import ProfileForm from "./ProfileForm";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -58,9 +59,10 @@ export default async function ProfilePage() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12">
-        <div className="max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8">Profile</h1>
+        <div className="max-w-2xl mx-auto space-y-8">
+          <h1 className="text-3xl font-bold">Profile</h1>
 
+          {/* User Overview Card */}
           <Card>
             <CardHeader className="text-center">
               <Avatar className="h-24 w-24 mx-auto mb-4">
@@ -73,19 +75,14 @@ export default async function ProfilePage() {
                 </AvatarFallback>
               </Avatar>
               <CardTitle className="text-2xl">
-                {user.user_metadata?.full_name || "User"}
+                {user.user_metadata?.full_name ||
+                  user.email?.split("@")[0] ||
+                  "User"}
               </CardTitle>
               <CardDescription>{user.email}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50">
-                <Mail className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Email</p>
-                  <p className="font-medium">{user.email}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50">
+            <CardContent>
+              <div className="flex items-center justify-center gap-3 p-4 rounded-lg bg-muted/50">
                 <Calendar className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Member since</p>
@@ -94,6 +91,13 @@ export default async function ProfilePage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Profile Form */}
+          <ProfileForm
+            userId={user.id}
+            userEmail={user.email || ""}
+            userMetadata={user.user_metadata}
+          />
         </div>
       </main>
     </div>
