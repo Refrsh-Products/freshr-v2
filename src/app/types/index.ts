@@ -96,3 +96,26 @@ export interface AnalyticsData {
     completedAt: string;
   }[];
 }
+
+// User Profile Types
+export interface UserProfile {
+  id: string;
+  user_id: string;
+  first_name: string | null;
+  last_name: string | null;
+  email: string;
+  phone: string | null;
+  university: string | null;
+  occupation: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserProfileFormData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  university: string;
+  occupation: string;
+}
