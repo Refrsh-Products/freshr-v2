@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Upload, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 
 const FinalCTA = () => {
   return (
@@ -32,13 +33,15 @@ const FinalCTA = () => {
 
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
             Join thousands of Bangladeshi students who are studying smarter with
-            PrepPrep.ai
+            FRESHR
           </p>
 
-          <Button variant="accent" size="xl" className="glow-accent">
-            <Upload className="w-5 h-5" />
-            Get Started with 1 Free Upload
-          </Button>
+          <Link href="/join">
+            <Button variant="accent" size="xl" className="glow-accent">
+              <Upload className="w-5 h-5" />
+              Join the Waitlist Now
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>

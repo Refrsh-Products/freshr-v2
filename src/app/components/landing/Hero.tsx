@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Sparkles, BookOpen, Zap } from "lucide-react";
+import Link from "next/link";
 
 const Hero = () => {
   return (
@@ -59,14 +60,12 @@ const Hero = () => {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <Button
-            variant="hero"
-            size="xl"
-            className="w-full sm:w-auto glow-primary"
-          >
-            <Zap className="w-5 h-5" />
-            Start Practicing for Free
-          </Button>
+          <Link href="/join" className="w-full sm:w-auto">
+            <Button variant="hero" size="xl" className="w-full glow-primary">
+              <Zap className="w-5 h-5" />
+              Get Early Access
+            </Button>
+          </Link>
           <Button variant="outline" size="xl" className="w-full sm:w-auto">
             <BookOpen className="w-5 h-5" />
             See How It Works

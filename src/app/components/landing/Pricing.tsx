@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Check, Zap, Crown } from "lucide-react";
+import Link from "next/link";
 
 const plans = [
   {
@@ -18,9 +19,9 @@ const plans = [
   {
     name: "Premium",
     subtitle: "The Pro",
-    price: "৳349",
+    price: "৳250",
     period: "/month",
-    altPrice: "৳999 per Semester",
+    altPrice: "৳500 per Semester",
     features: [
       "Unlimited PDF Uploads",
       "Unlimited Practice Sets",
@@ -130,13 +131,15 @@ const Pricing = () => {
                 ))}
               </ul>
 
-              <Button
-                variant={plan.popular ? "hero" : "outline"}
-                size="lg"
-                className="w-full"
-              >
-                {plan.cta}
-              </Button>
+              <Link href="/join" className="w-full">
+                <Button
+                  variant={plan.popular ? "hero" : "outline"}
+                  size="lg"
+                  className="w-full"
+                >
+                  {plan.cta}
+                </Button>
+              </Link>
             </motion.div>
           ))}
         </div>
