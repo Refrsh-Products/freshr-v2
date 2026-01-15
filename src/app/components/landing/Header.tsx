@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Menu, X } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -39,12 +40,16 @@ const Header = () => {
             >
               Pricing
             </a>
-            <Button variant="ghost" size="sm">
-              Log In
-            </Button>
-            <Button variant="hero" size="sm">
-              Start Free
-            </Button>
+            <Link href="/login">
+              <Button variant="ghost" size="sm">
+                Log In
+              </Button>
+            </Link>
+            <Link href="/join">
+              <Button variant="hero" size="sm">
+                Get Access
+              </Button>
+            </Link>
           </nav>
 
           {/* Mobile menu button */}
@@ -84,12 +89,20 @@ const Header = () => {
                 Pricing
               </a>
               <div className="flex flex-col gap-2 pt-2">
-                <Button variant="ghost" size="sm" className="justify-start">
-                  Log In
-                </Button>
-                <Button variant="hero" size="sm">
-                  Start Free
-                </Button>
+                <Link href="/login">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="justify-start w-full"
+                  >
+                    Log In
+                  </Button>
+                </Link>
+                <Link href="/join">
+                  <Button variant="hero" size="sm" className="w-full">
+                    Get Access
+                  </Button>
+                </Link>
               </div>
             </nav>
           </motion.div>
