@@ -12,7 +12,7 @@ const Footer = () => {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="text-lg font-bold">PrepPrep.ai</span>
+            <span className="text-lg font-bold">FRESHR</span>
           </a>
 
           {/* Links */}
@@ -39,7 +39,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className="text-sm text-muted-foreground">
-            © 2026 PrepPrep.ai. Made with 💚 in Bangladesh.
+            © 2026 FRESHR. Made with 💚 in Bangladesh.
           </p>
         </div>
       </div>

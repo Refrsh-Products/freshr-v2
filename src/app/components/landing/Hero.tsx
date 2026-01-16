@@ -48,7 +48,7 @@ const Hero = () => {
         >
           The first AI study partner built specifically for{" "}
           <span className="font-semibold text-foreground">
-            DU, BUET, and NSU Science students.
+            university students.
           </span>{" "}
           Turn your lecture PDFs into custom practice exams in seconds.
         </motion.p>
