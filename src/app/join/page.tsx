@@ -29,12 +29,114 @@ export default function JoinPage() {
   });
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [activePayment, setActivePayment] = useState<"bkash" | "nagad">(
+    "bkash"
+  );
 
-  const bkashNumber = "01873070777";
+  const paymentMethods = {
+    bkash: {
+      name: "bKash",
+      number: "01735297191",
+      color: "#E2136E",
+      dialCode: "*247#",
+      steps: [
+        {
+          text: (
+            <>
+              <strong className="text-foreground">*247#</strong> ডায়াল করে
+              আপনার BKASH মোবাইল মেনুতে যান অথবা BKASH অ্যাপে যান।
+            </>
+          ),
+        },
+        {
+          text: (
+            <>
+              <strong className="text-foreground">
+                &quot;Send Money&quot;
+              </strong>{" "}
+              -এ ক্লিক করুন।
+            </>
+          ),
+        },
+        { text: <>প্রাপক নম্বর হিসেবে এই নম্বরটি লিখুন:</> },
+      ],
+      stepsAfterNumber: [
+        {
+          text: (
+            <>
+              টাকার পরিমাণ: <strong className="text-foreground">250</strong>
+            </>
+          ),
+        },
+        { text: <>নিশ্চিত করতে এখন আপনার BKASH মোবাইল মেনু পিন লিখুন।</> },
+        {
+          text: (
+            <>সবকিছু ঠিক থাকলে, আপনি BKASH থেকে একটি নিশ্চিতকরণ বার্তা পাবেন।</>
+          ),
+        },
+        {
+          text: (
+            <>
+              এখন নিচের বক্সে আপনার{" "}
+              <strong className="text-foreground">Transaction ID</strong> দিন।
+            </>
+          ),
+        },
+      ],
+    },
+    nagad: {
+      name: "Nagad",
+      number: "01234567890",
+      color: "#F6921E",
+      dialCode: "*167#",
+      steps: [
+        {
+          text: (
+            <>
+              <strong className="text-foreground">*167#</strong> ডায়াল করে
+              আপনার NAGAD মোবাইল মেনুতে যান অথবা অ্যাপে যান।
+            </>
+          ),
+        },
+        {
+          text: (
+            <>
+              <strong className="text-foreground">
+                &quot;Send Money&quot;
+              </strong>{" "}
+              এ ক্লিক করুন।
+            </>
+          ),
+        },
+        { text: <>প্রাপক নম্বর:</> },
+      ],
+      stepsAfterNumber: [
+        {
+          text: (
+            <>
+              পরিমাণ: <strong className="text-foreground">250</strong>
+            </>
+          ),
+        },
+        { text: <>পিন দিয়ে নিশ্চিত করুন।</> },
+        { text: <>একটি নিশ্চিতকরণ SMS পাবেন।</> },
+        {
+          text: (
+            <>
+              এখন নিচের বক্সে আপনার{" "}
+              <strong className="text-foreground">Transaction ID</strong> দিন।
+            </>
+          ),
+        },
+      ],
+    },
+  };
+
+  const currentPayment = paymentMethods[activePayment];
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(bkashNumber);
+      await navigator.clipboard.writeText(currentPayment.number);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -209,53 +311,96 @@ export default function JoinPage() {
           </h3>
 
           <div className="space-y-4 text-sm">
+            {/* Payment Method Tabs */}
+            <div className="flex gap-2 p-1 bg-muted/50 rounded-lg">
+              <button
+                type="button"
+                onClick={() => {
+                  setActivePayment("bkash");
+                  setCopied(false);
+                }}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-md font-semibold transition-all ${
+                  activePayment === "bkash"
+                    ? "bg-[#E2136E] text-white shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                <span>bKash</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActivePayment("nagad");
+                  setCopied(false);
+                }}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-md font-semibold transition-all ${
+                  activePayment === "nagad"
+                    ? "bg-[#F6921E] text-white shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                <span>Nagad</span>
+              </button>
+            </div>
+
             {/* Price */}
-            <div className="flex items-center justify-between p-3 bg-[#E2136E]/10 rounded-lg border border-[#E2136E]/20">
+            <div
+              className="flex items-center justify-between p-3 rounded-lg border"
+              style={{
+                backgroundColor: `${currentPayment.color}10`,
+                borderColor: `${currentPayment.color}20`,
+              }}
+            >
               <span className="font-medium">Amount:</span>
-              <span className="font-bold text-[#E2136E] text-lg">৳250</span>
+              <span
+                className="font-bold text-lg"
+                style={{ color: currentPayment.color }}
+              >
+                ৳250
+              </span>
             </div>
 
             {/* Steps */}
             <div className="bg-muted/50 rounded-lg p-4 space-y-3">
               <ol className="space-y-3 text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#E2136E]/10 text-[#E2136E] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                    1
-                  </span>
-                  <span>
-                    <strong className="text-foreground">*247#</strong> ডায়াল
-                    করে আপনার BKASH মোবাইল মেনুতে যান অথবা BKASH অ্যাপে যান।
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#E2136E]/10 text-[#E2136E] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                    2
-                  </span>
-                  <span>
-                    <strong className="text-foreground">
-                      &quot;Send Money&quot;
-                    </strong>{" "}
-                    -এ ক্লিক করুন।
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#E2136E]/10 text-[#E2136E] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                    3
-                  </span>
-                  <span>প্রাপক নম্বর হিসেবে এই নম্বরটি লিখুন:</span>
-                </li>
+                {currentPayment.steps.map((step, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <span
+                      className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
+                      style={{
+                        backgroundColor: `${currentPayment.color}10`,
+                        color: currentPayment.color,
+                      }}
+                    >
+                      {index + 1}
+                    </span>
+                    <span>{step.text}</span>
+                  </li>
+                ))}
               </ol>
 
               {/* Copyable Number */}
               <button
                 type="button"
                 onClick={copyToClipboard}
-                className="w-full flex items-center justify-between p-3 bg-background rounded-lg border border-[#E2136E]/30 hover:border-[#E2136E] transition-colors group cursor-pointer"
+                className="w-full flex items-center justify-between p-3 bg-background rounded-lg border transition-colors group cursor-pointer"
+                style={{
+                  borderColor: `${currentPayment.color}30`,
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.borderColor = currentPayment.color)
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.borderColor = `${currentPayment.color}30`)
+                }
               >
-                <code className="text-[#E2136E] font-mono font-bold text-lg">
-                  {bkashNumber}
+                <code
+                  className="font-mono font-bold text-lg"
+                  style={{ color: currentPayment.color }}
+                >
+                  {currentPayment.number}
                 </code>
-                <span className="flex items-center gap-1 text-xs text-muted-foreground group-hover:text-[#E2136E] transition-colors">
+                <span className="flex items-center gap-1 text-xs text-muted-foreground transition-colors">
                   {copied ? (
                     <>
                       <Check className="w-4 h-4 text-green-500" />
@@ -270,43 +415,21 @@ export default function JoinPage() {
                 </span>
               </button>
 
-              <ol className="space-y-3 text-muted-foreground" start={4}>
-                <li className="flex items-start gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#E2136E]/10 text-[#E2136E] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                    4
-                  </span>
-                  <span>
-                    টাকার পরিমাণ:{" "}
-                    <strong className="text-foreground">250</strong>
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#E2136E]/10 text-[#E2136E] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                    5
-                  </span>
-                  <span>
-                    নিশ্চিত করতে এখন আপনার BKASH মোবাইল মেনু পিন লিখুন।
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#E2136E]/10 text-[#E2136E] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                    6
-                  </span>
-                  <span>
-                    সবকিছু ঠিক থাকলে, আপনি BKASH থেকে একটি নিশ্চিতকরণ বার্তা
-                    পাবেন।
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#E2136E]/10 text-[#E2136E] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                    7
-                  </span>
-                  <span>
-                    এখন নিচের বক্সে আপনার{" "}
-                    <strong className="text-foreground">Transaction ID</strong>{" "}
-                    দিন।
-                  </span>
-                </li>
+              <ol className="space-y-3 text-muted-foreground">
+                {currentPayment.stepsAfterNumber.map((step, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <span
+                      className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
+                      style={{
+                        backgroundColor: `${currentPayment.color}10`,
+                        color: currentPayment.color,
+                      }}
+                    >
+                      {index + 4}
+                    </span>
+                    <span>{step.text}</span>
+                  </li>
+                ))}
               </ol>
             </div>
           </div>
