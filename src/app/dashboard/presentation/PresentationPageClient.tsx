@@ -11,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import PresentationForm, {
   GeneratedPresentationData,
 } from "./PresentationForm";
@@ -51,7 +50,6 @@ export default function PresentationPageClient() {
               </span>
             </Link>
           </div>
-          <ThemeToggle />
         </div>
       </header>
 

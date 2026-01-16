@@ -11,7 +11,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import ProfileForm from "./ProfileForm";
 
 export default async function ProfilePage() {
@@ -53,7 +52,6 @@ export default async function ProfilePage() {
               </span>
             </Link>
           </div>
-          <ThemeToggle />
         </div>
       </header>
 

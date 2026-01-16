@@ -25,7 +25,7 @@ const Testimonial = () => {
             </div>
 
             <blockquote className="text-xl sm:text-2xl md:text-3xl font-medium mb-6 text-balance leading-relaxed">
-              "I used PrepPrep for my Chemistry midterms at NSU. The AI caught a
+              "I used FRESHR for my Chemistry midterms at NSU. The AI caught a
               niche topic from{" "}
               <span className="text-primary font-semibold">Slide 42</span> that
               I would have totally skipped.{" "}

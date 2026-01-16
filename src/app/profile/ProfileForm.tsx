@@ -325,7 +325,7 @@ export default function ProfileForm({
 
           {/* Success Message */}
           {saveSuccess && (
-            <div className="bg-green-500/10 text-green-600 dark:text-green-400 text-sm p-3 rounded-lg flex items-center gap-2">
+            <div className="bg-green-500/10 text-green-600 text-sm p-3 rounded-lg flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4" />
               Profile saved successfully!
             </div>

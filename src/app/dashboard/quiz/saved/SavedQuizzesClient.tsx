@@ -34,7 +34,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ThemeToggle } from "@/components/ThemeToggle";
+
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -141,7 +141,6 @@ export default function SavedQuizzesClient() {
                 FRESHR
               </span>
             </Link>
-            <ThemeToggle />
           </div>
         </header>
         <div className="flex items-center justify-center min-h-[60vh]">
@@ -164,7 +163,6 @@ export default function SavedQuizzesClient() {
               FRESHR
             </span>
           </Link>
-          <ThemeToggle />
         </div>
       </header>
 

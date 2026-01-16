@@ -28,7 +28,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { toast } from "sonner";
 
 interface QuizFormProps {

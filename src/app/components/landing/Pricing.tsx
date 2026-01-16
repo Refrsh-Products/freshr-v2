@@ -7,10 +7,10 @@ import Link from "next/link";
 
 const plans = [
   {
-    name: "Free",
+    name: "Standard",
     subtitle: "The Starter",
-    price: "৳0",
-    period: "",
+    price: "৳250",
+    period: "/month",
     features: ["1 PDF Upload", "10 Quizzes per month", "Basic Topic Tracking"],
     cta: "Get Started",
     popular: false,
@@ -19,14 +19,13 @@ const plans = [
   {
     name: "Premium",
     subtitle: "The Pro",
-    price: "৳250",
+    price: "৳500",
     period: "/month",
-    altPrice: "৳500 per Semester",
+    altPrice: "",
     features: [
       "Unlimited PDF Uploads",
       "Unlimited Practice Sets",
       "Full Concept Mastery Map",
-      "Priority AI Support",
     ],
     cta: "Go Premium",
     popular: true,
@@ -52,7 +51,7 @@ const Pricing = () => {
             Simple, Student-Friendly Pricing.
           </h2>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-6">
-            Accepting bKash, Nagad, and Rocket.
+            Accepting bKash and Nagad.
           </p>
 
           {/* Payment logos */}
@@ -62,9 +61,6 @@ const Pricing = () => {
             </div>
             <div className="bg-[#F6921E] text-primary-foreground px-4 py-2 rounded-lg font-bold text-sm">
               Nagad
-            </div>
-            <div className="bg-[#8B2C8F] text-primary-foreground px-4 py-2 rounded-lg font-bold text-sm">
-              Rocket
             </div>
           </div>
         </motion.div>

@@ -12,7 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import QuizForm, { GeneratedQuizData } from "./QuizForm";
 import QuizPlayer from "./QuizPlayer";
 
@@ -86,7 +85,6 @@ export default function QuizPageClient() {
                 Saved Quizzes
               </Link>
             </Button>
-            <ThemeToggle />
           </div>
         </div>
       </header>

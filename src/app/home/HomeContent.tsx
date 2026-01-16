@@ -25,7 +25,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { signout } from "./actions";
 
@@ -50,8 +49,6 @@ export default function HomeContent({ user }: HomeContentProps) {
           </Link>
 
           <div className="flex items-center gap-2">
-            <ThemeToggle />
-
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -178,6 +175,7 @@ export default function HomeContent({ user }: HomeContentProps) {
                     <li>✓ Transform notes into slides</li>
                     <li>✓ Professional templates</li>
                     <li>✓ Auto-generated layouts</li>
+                    <li>✓ Speaker Notes</li>
                   </ul>
                   <Button className="w-full" variant="accent">
                     Start Presentation
