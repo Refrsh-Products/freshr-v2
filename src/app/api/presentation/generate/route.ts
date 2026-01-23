@@ -3,6 +3,19 @@ import { createClient } from "@/lib/supabase/server";
 import { generatePresentationOutline } from "@/lib/openai";
 import { extractTextFromPDF, cleanExtractedText } from "@/lib/pdf-processor";
 
+interface UploadedFile {
+  fileName: string;
+  fileType: string;
+  filePath: string;
+}
+
+interface GenerateRequestBody {
+  files?: UploadedFile[] | null;
+  text?: string | null;
+  numberOfSlides?: number;
+  style?: "professional" | "academic" | "casual";
+}
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -14,39 +27,73 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const formData = await request.formData();
-    const file = formData.get("file") as File | null;
-    const text = formData.get("text") as string | null;
-    const numberOfSlides =
-      parseInt(formData.get("numberOfSlides") as string) || 10;
-    const style =
-      (formData.get("style") as "professional" | "academic" | "casual") ||
-      "professional";
+    const body: GenerateRequestBody = await request.json();
+    const { files, text, numberOfSlides = 10, style = "professional" } = body;
 
-    let content: string;
+    let content: string = "";
+    const filesToCleanup: string[] = [];
 
-    if (file) {
-      // Process uploaded file
-      const arrayBuffer = await file.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
+    if (files && files.length > 0) {
+      // Process each uploaded file
+      const contentParts: string[] = [];
 
-      if (file.type === "application/pdf") {
-        const rawText = await extractTextFromPDF(buffer);
-        content = cleanExtractedText(rawText);
-      } else if (file.type === "text/plain") {
-        content = buffer.toString("utf-8");
-      } else {
-        return NextResponse.json(
-          { error: "Unsupported file type. Please upload a PDF or text file." },
-          { status: 400 }
-        );
+      for (const file of files) {
+        // Download file from Supabase Storage
+        const { data: fileData, error: downloadError } = await supabase.storage
+          .from("presentation-files")
+          .download(file.filePath);
+
+        if (downloadError) {
+          console.error("Download error:", downloadError);
+          // Clean up any files we've tracked so far
+          if (filesToCleanup.length > 0) {
+            await supabase.storage
+              .from("presentation-files")
+              .remove(filesToCleanup);
+          }
+          return NextResponse.json(
+            { error: `Failed to retrieve file: ${file.fileName}` },
+            { status: 400 },
+          );
+        }
+
+        filesToCleanup.push(file.filePath);
+
+        const arrayBuffer = await fileData.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        let fileContent: string;
+
+        if (file.fileType === "application/pdf") {
+          const rawText = await extractTextFromPDF(buffer);
+          fileContent = cleanExtractedText(rawText);
+        } else if (file.fileType === "text/plain") {
+          fileContent = buffer.toString("utf-8");
+        } else {
+          continue; // Skip unsupported file types
+        }
+
+        if (fileContent.trim()) {
+          contentParts.push(
+            `--- Content from: ${file.fileName} ---\n${fileContent}`,
+          );
+        }
       }
+
+      // Clean up all files from storage after processing
+      if (filesToCleanup.length > 0) {
+        await supabase.storage
+          .from("presentation-files")
+          .remove(filesToCleanup);
+      }
+
+      content = contentParts.join("\n\n");
     } else if (text && text.trim()) {
       content = text.trim();
     } else {
       return NextResponse.json(
-        { error: "Please provide either a file or text content." },
-        { status: 400 }
+        { error: "Please provide either files or text content." },
+        { status: 400 },
       );
     }
 
@@ -56,12 +103,12 @@ export async function POST(request: NextRequest) {
           error:
             "Content is too short. Please provide more content to generate a meaningful presentation.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Limit content length to avoid token limits
-    const maxContentLength = 15000;
+    const maxContentLength = 30000; // Increased for multiple files
     if (content.length > maxContentLength) {
       content = content.substring(0, maxContentLength);
     }
@@ -70,7 +117,7 @@ export async function POST(request: NextRequest) {
     const presentation = await generatePresentationOutline(
       content,
       numberOfSlides,
-      style
+      style,
     );
 
     // Generate a unique ID for the presentation
@@ -94,7 +141,7 @@ export async function POST(request: NextRequest) {
             ? error.message
             : "Failed to generate presentation",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

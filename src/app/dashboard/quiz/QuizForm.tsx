@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 
 interface QuizFormProps {
   onQuizGenerated: (quiz: GeneratedQuizData) => void;
@@ -51,14 +52,19 @@ export interface GeneratedQuizData {
 }
 
 export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [text, setText] = useState("");
   const [numberOfQuestions, setNumberOfQuestions] = useState("5");
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
-    "medium"
+    "medium",
   );
   const [isLoading, setIsLoading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string>("");
+
+  const isValidFileType = (file: File) => {
+    return file.type === "application/pdf" || file.type === "text/plain";
+  };
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -75,62 +81,136 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
     e.stopPropagation();
     setDragActive(false);
 
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const droppedFile = e.dataTransfer.files[0];
-      if (
-        droppedFile.type === "application/pdf" ||
-        droppedFile.type === "text/plain"
-      ) {
-        setFile(droppedFile);
-        setText(""); // Clear text when file is uploaded
-      } else {
-        toast.error("Please upload a PDF or text file");
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const droppedFiles = Array.from(e.dataTransfer.files);
+      const validFiles = droppedFiles.filter(isValidFileType);
+      const invalidCount = droppedFiles.length - validFiles.length;
+
+      if (invalidCount > 0) {
+        toast.error(
+          `${invalidCount} file(s) skipped. Only PDF and TXT files are supported.`,
+        );
+      }
+
+      if (validFiles.length > 0) {
+        setFiles((prev) => [...prev, ...validFiles]);
+        setText("");
       }
     }
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0];
-      if (
-        selectedFile.type === "application/pdf" ||
-        selectedFile.type === "text/plain"
-      ) {
-        setFile(selectedFile);
-        setText(""); // Clear text when file is uploaded
-      } else {
-        toast.error("Please upload a PDF or text file");
+    if (e.target.files && e.target.files.length > 0) {
+      const selectedFiles = Array.from(e.target.files);
+      const validFiles = selectedFiles.filter(isValidFileType);
+      const invalidCount = selectedFiles.length - validFiles.length;
+
+      if (invalidCount > 0) {
+        toast.error(
+          `${invalidCount} file(s) skipped. Only PDF and TXT files are supported.`,
+        );
+      }
+
+      if (validFiles.length > 0) {
+        setFiles((prev) => [...prev, ...validFiles]);
+        setText("");
       }
     }
+    e.target.value = "";
   };
 
-  const removeFile = () => {
-    setFile(null);
+  const removeFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const clearAllFiles = () => {
+    setFiles([]);
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const getTotalSize = () => {
+    return files.reduce((sum, file) => sum + file.size, 0);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!file && !text.trim()) {
-      toast.error("Please upload a file or enter some text");
+    if (files.length === 0 && !text.trim()) {
+      toast.error("Please upload files or enter some text");
       return;
     }
 
     setIsLoading(true);
+    setUploadProgress("");
 
     try {
-      const formData = new FormData();
-      if (file) {
-        formData.append("file", file);
-      } else {
-        formData.append("text", text);
-      }
-      formData.append("numberOfQuestions", numberOfQuestions);
-      formData.append("difficulty", difficulty);
+      const supabase = createClient();
 
+      // Get the current user
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Please sign in to generate quizzes");
+        setIsLoading(false);
+        return;
+      }
+
+      const uploadedFiles: Array<{
+        fileName: string;
+        fileType: string;
+        filePath: string;
+      }> = [];
+
+      if (files.length > 0) {
+        // Upload all files to Supabase Storage
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          setUploadProgress(`Uploading file ${i + 1} of ${files.length}...`);
+
+          const fileExt = file.name.split(".").pop();
+          const uniqueFileName = `${user.id}/${Date.now()}-${crypto.randomUUID()}.${fileExt}`;
+
+          const { data: uploadData, error: uploadError } =
+            await supabase.storage
+              .from("presentation-files")
+              .upload(uniqueFileName, file, {
+                cacheControl: "3600",
+                upsert: false,
+              });
+
+          if (uploadError) {
+            console.error("Upload error:", uploadError);
+            throw new Error(`Failed to upload ${file.name}. Please try again.`);
+          }
+
+          uploadedFiles.push({
+            fileName: file.name,
+            fileType: file.type,
+            filePath: uploadData.path,
+          });
+        }
+      }
+
+      setUploadProgress("Generating quiz...");
+
+      // Send metadata to the API
       const response = await fetch("/api/quiz/generate", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          files: uploadedFiles.length > 0 ? uploadedFiles : null,
+          text: text || null,
+          numberOfQuestions: parseInt(numberOfQuestions),
+          difficulty,
+        }),
       });
 
       const data = await response.json();
@@ -140,13 +220,16 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
       }
 
       toast.success("Quiz generated successfully!");
+      setFiles([]);
+      setText("");
       onQuizGenerated(data.quiz);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to generate quiz"
+        error instanceof Error ? error.message : "Failed to generate quiz",
       );
     } finally {
       setIsLoading(false);
+      setUploadProgress("");
     }
   };
 
@@ -154,64 +237,97 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* File Upload */}
       <div className="space-y-2">
-        <Label>Upload Document</Label>
+        <div className="flex items-center justify-between">
+          <Label>Upload Documents</Label>
+          {files.length > 0 && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={clearAllFiles}
+              className="text-muted-foreground hover:text-destructive"
+            >
+              Clear all
+            </Button>
+          )}
+        </div>
         <div
-          className={`relative border-2 border-dashed rounded-xl p-8 transition-colors ${
+          className={`relative border-2 border-dashed rounded-xl p-6 transition-colors ${
             dragActive
               ? "border-primary bg-primary/5"
-              : file
-              ? "border-primary/50 bg-primary/5"
-              : "border-muted-foreground/25 hover:border-primary/50"
+              : files.length > 0
+                ? "border-primary/50 bg-primary/5"
+                : "border-muted-foreground/25 hover:border-primary/50"
           }`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
         >
-          {file ? (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <FileText className="h-8 w-8 text-primary" />
-                <div>
-                  <p className="font-medium">{file.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {(file.size / 1024).toFixed(1)} KB
-                  </p>
-                </div>
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={removeFile}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          ) : (
-            <div className="text-center">
-              <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-lg font-medium mb-1">
-                Drag and drop your file here
-              </p>
-              <p className="text-sm text-muted-foreground mb-4">
-                Supports PDF and TXT files
-              </p>
-              <input
-                type="file"
-                accept=".pdf,.txt,application/pdf,text/plain"
-                onChange={handleFileChange}
-                className="hidden"
-                id="file-upload"
-              />
-              <Button type="button" variant="outline" asChild>
-                <label htmlFor="file-upload" className="cursor-pointer">
-                  Browse Files
-                </label>
-              </Button>
-            </div>
-          )}
+          <div className="text-center">
+            <Upload className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
+            <p className="text-base font-medium mb-1">
+              Drag and drop your files here
+            </p>
+            <p className="text-sm text-muted-foreground mb-3">
+              Supports multiple PDF and TXT files
+            </p>
+            <input
+              type="file"
+              accept=".pdf,.txt,application/pdf,text/plain"
+              onChange={handleFileChange}
+              className="hidden"
+              id="quiz-file-upload"
+              multiple
+            />
+            <Button type="button" variant="outline" size="sm" asChild>
+              <label htmlFor="quiz-file-upload" className="cursor-pointer">
+                Browse Files
+              </label>
+            </Button>
+          </div>
         </div>
+
+        {/* File List */}
+        {files.length > 0 && (
+          <div className="space-y-2 mt-3">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <span>
+                {files.length} file{files.length > 1 ? "s" : ""} selected
+              </span>
+              <span>Total: {formatFileSize(getTotalSize())}</span>
+            </div>
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+              {files.map((file, index) => (
+                <div
+                  key={`${file.name}-${index}`}
+                  className="flex items-center justify-between bg-muted/50 rounded-lg p-3"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <FileText className="h-5 w-5 text-primary flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm truncate">
+                        {file.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatFileSize(file.size)}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 flex-shrink-0"
+                    onClick={() => removeFile(index)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Divider */}
@@ -235,10 +351,10 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
           value={text}
           onChange={(e) => {
             setText(e.target.value);
-            if (e.target.value) setFile(null); // Clear file when text is entered
+            if (e.target.value) setFiles([]);
           }}
           className="min-h-[150px] resize-none"
-          disabled={!!file}
+          disabled={files.length > 0}
         />
         <p className="text-xs text-muted-foreground">
           {text.length} characters{" "}
@@ -292,12 +408,12 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
         className="w-full"
         variant="hero"
         size="lg"
-        disabled={isLoading || (!file && !text.trim())}
+        disabled={isLoading || (files.length === 0 && !text.trim())}
       >
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            Generating Quiz...
+            {uploadProgress || "Processing..."}
           </>
         ) : (
           <>
@@ -306,6 +422,38 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
           </>
         )}
       </Button>
+
+      {/* Full-screen Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-card border rounded-2xl p-8 shadow-lg max-w-sm w-full mx-4 text-center">
+            <div className="relative mx-auto w-16 h-16 mb-6">
+              <div className="absolute inset-0 rounded-full border-4 border-primary/20"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+              <Sparkles className="absolute inset-0 m-auto h-6 w-6 text-primary animate-pulse" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Generating Your Quiz</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              {uploadProgress ||
+                "AI is analyzing your content and creating questions..."}
+            </p>
+            <div className="flex items-center justify-center gap-1">
+              <span
+                className="w-2 h-2 bg-primary rounded-full animate-bounce"
+                style={{ animationDelay: "0ms" }}
+              ></span>
+              <span
+                className="w-2 h-2 bg-primary rounded-full animate-bounce"
+                style={{ animationDelay: "150ms" }}
+              ></span>
+              <span
+                className="w-2 h-2 bg-primary rounded-full animate-bounce"
+                style={{ animationDelay: "300ms" }}
+              ></span>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 }
