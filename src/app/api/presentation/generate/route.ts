@@ -14,6 +14,7 @@ interface GenerateRequestBody {
   text?: string | null;
   numberOfSlides?: number;
   style?: "professional" | "academic" | "casual";
+  format?: "concise" | "detailed" | "bulletpoint";
 }
 
 export async function POST(request: NextRequest) {
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body: GenerateRequestBody = await request.json();
-    const { files, text, numberOfSlides = 10, style = "professional" } = body;
+    const { files, text, numberOfSlides = 10, style = "professional", format = "bulletpoint" } = body;
 
     let content: string = "";
     const filesToCleanup: string[] = [];
@@ -113,11 +114,12 @@ export async function POST(request: NextRequest) {
       content = content.substring(0, maxContentLength);
     }
 
-    // Generate presentation using OpenAI
+    // Generate presentation using AI
     const presentation = await generatePresentationOutline(
       content,
       numberOfSlides,
       style,
+      format,
     );
 
     // Generate a unique ID for the presentation

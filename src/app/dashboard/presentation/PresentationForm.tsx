@@ -21,8 +21,8 @@ interface PresentationFormProps {
 
 export interface SlideData {
   title: string;
-  bulletPoints: string[];
-  speakerNotes?: string;
+  content: string;
+  format: "concise" | "detailed" | "bulletpoint";
 }
 
 export interface GeneratedPresentationData {
@@ -43,6 +43,9 @@ export default function PresentationForm({
   const [numberOfSlides, setNumberOfSlides] = useState("10");
   const [style, setStyle] = useState<"professional" | "academic" | "casual">(
     "professional",
+  );
+  const [format, setFormat] = useState<"concise" | "detailed" | "bulletpoint">(
+    "bulletpoint",
   );
   const [isLoading, setIsLoading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
@@ -197,6 +200,7 @@ export default function PresentationForm({
           text: text || null,
           numberOfSlides: parseInt(numberOfSlides),
           style,
+          format,
         }),
       });
 
@@ -389,6 +393,25 @@ export default function PresentationForm({
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Content Format</Label>
+        <Select
+          value={format}
+          onValueChange={(v) =>
+            setFormat(v as "concise" | "detailed" | "bulletpoint")
+          }
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="bulletpoint">Bullet Points</SelectItem>
+            <SelectItem value="concise">Concise (50-100 words)</SelectItem>
+            <SelectItem value="detailed">Detailed (150-200 words)</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Submit Button */}
