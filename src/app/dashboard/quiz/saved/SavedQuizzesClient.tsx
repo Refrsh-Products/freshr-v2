@@ -69,7 +69,7 @@ export default function SavedQuizzesClient() {
       setQuizzes(data.quizzes || []);
     } catch (error) {
       console.error("Error fetching quizzes:", error);
-      toast.error("Failed to load saved quizzes");
+      toast.error("Failed to load past quizzes");
     } finally {
       setIsLoading(false);
     }
@@ -146,7 +146,7 @@ export default function SavedQuizzesClient() {
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-muted-foreground">Loading saved quizzes...</p>
+            <p className="text-muted-foreground">Loading past quizzes...</p>
           </div>
         </div>
       </div>
@@ -175,7 +175,7 @@ export default function SavedQuizzesClient() {
             </Link>
           </Button>
           <div className="flex-1">
-            <h1 className="text-3xl font-bold">Saved Quizzes</h1>
+            <h1 className="text-3xl font-bold">Past Quizzes</h1>
             <p className="text-muted-foreground">
               Review and retry your previous quizzes
             </p>
@@ -193,7 +193,7 @@ export default function SavedQuizzesClient() {
           <Card className="border-dashed">
             <CardContent className="flex flex-col items-center justify-center py-12">
               <BookOpen className="h-16 w-16 text-muted-foreground mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No Saved Quizzes</h3>
+              <h3 className="text-xl font-semibold mb-2">No Past Quizzes</h3>
               <p className="text-muted-foreground text-center mb-6 max-w-md">
                 Complete a quiz to save it here. You can then revisit and retry
                 it anytime.
