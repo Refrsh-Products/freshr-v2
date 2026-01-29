@@ -173,8 +173,13 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
           const file = files[i];
           setUploadProgress(`Uploading file ${i + 1} of ${files.length}...`);
 
-          const fileExt = file.name.split(".").pop();
-          const uniqueFileName = `${user.id}/${Date.now()}-${crypto.randomUUID()}.${fileExt}`;
+          // Sanitize filename for storage
+          const sanitizedName = file.name
+            .replace(/[^a-zA-Z0-9._-]/g, '_')
+            .replace(/_{2,}/g, '_');
+
+          const timestamp = Date.now();
+          const uniqueFileName = `${user.id}/${timestamp}__${sanitizedName}`;
 
           const { data: uploadData, error: uploadError } =
             await supabase.storage
@@ -182,6 +187,12 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
               .upload(uniqueFileName, file, {
                 cacheControl: "3600",
                 upsert: false,
+                contentType: file.type,
+                metadata: {
+                  originalName: file.name,
+                  size: file.size.toString(),
+                  type: file.type,
+                },
               });
 
           if (uploadError) {

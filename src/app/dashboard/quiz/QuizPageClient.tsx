@@ -82,7 +82,7 @@ export default function QuizPageClient() {
             <Button variant="outline" size="sm" asChild>
               <Link href="/dashboard/quiz/saved">
                 <BookOpen className="mr-2 h-4 w-4" />
-                Saved Quizzes
+                Past Quizzes
               </Link>
             </Button>
           </div>
