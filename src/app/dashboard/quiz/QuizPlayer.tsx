@@ -359,70 +359,75 @@ export default function QuizPlayer({
       </div>
 
       {/* Question Card */}
-      <Card>
-        <CardHeader>
+      <Card className="flex flex-col max-h-[calc(100vh-200px)]">
+        <CardHeader className="shrink-0">
           <CardTitle className="text-xl leading-relaxed">
             {currentQuestion.question}
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          {currentQuestion.options.map((option, index) => {
-            const isSelected = selectedAnswer === index;
-            const isCorrect = index === currentQuestion.correctAnswer;
-            const showCorrect = showResult && isCorrect;
-            const showWrong = showResult && isSelected && !isCorrect;
+        <CardContent className="flex flex-col flex-1 min-h-0">
+          {/* Scrollable area for question and options */}
+          <div className="flex-1 overflow-y-auto pr-2 mb-4">
+            <div className="space-y-3">
+              {currentQuestion.options.map((option, index) => {
+                const isSelected = selectedAnswer === index;
+                const isCorrect = index === currentQuestion.correctAnswer;
+                const showCorrect = showResult && isCorrect;
+                const showWrong = showResult && isSelected && !isCorrect;
 
-            return (
-              <button
-                key={index}
-                onClick={() => handleAnswerSelect(index)}
-                disabled={showResult}
-                className={cn(
-                  "w-full text-left p-4 rounded-lg border-2 transition-all",
-                  "hover:border-primary/50 hover:bg-primary/5",
-                  isSelected && !showResult && "border-primary bg-primary/10",
-                  showCorrect && "border-green-500 bg-green-500/10",
-                  showWrong && "border-red-500 bg-red-500/10",
-                  !isSelected && !showCorrect && !showWrong && "border-border",
-                  showResult && "cursor-default"
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <span
+                return (
+                  <button
+                    key={index}
+                    onClick={() => handleAnswerSelect(index)}
+                    disabled={showResult}
                     className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium shrink-0",
-                      isSelected &&
-                        !showResult &&
-                        "bg-primary text-primary-foreground",
-                      showCorrect && "bg-green-500 text-white",
-                      showWrong && "bg-red-500 text-white",
-                      !isSelected && !showCorrect && !showWrong && "bg-muted"
+                      "w-full text-left p-4 rounded-lg border-2 transition-all",
+                      "hover:border-primary/50 hover:bg-primary/5",
+                      isSelected && !showResult && "border-primary bg-primary/10",
+                      showCorrect && "border-green-500 bg-green-500/10",
+                      showWrong && "border-red-500 bg-red-500/10",
+                      !isSelected && !showCorrect && !showWrong && "border-border",
+                      showResult && "cursor-default"
                     )}
                   >
-                    {String.fromCharCode(65 + index)}
-                  </span>
-                  <span className="flex-1">{option}</span>
-                  {showCorrect && (
-                    <CheckCircle2 className="h-5 w-5 text-green-500" />
-                  )}
-                  {showWrong && <XCircle className="h-5 w-5 text-red-500" />}
-                </div>
-              </button>
-            );
-          })}
-
-          {/* Explanation */}
-          {showResult && (
-            <div className="mt-4 p-4 rounded-lg bg-muted/50 border">
-              <p className="font-medium text-sm mb-1">Explanation:</p>
-              <p className="text-sm text-muted-foreground">
-                {currentQuestion.explanation}
-              </p>
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={cn(
+                          "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium shrink-0",
+                          isSelected &&
+                            !showResult &&
+                            "bg-primary text-primary-foreground",
+                          showCorrect && "bg-green-500 text-white",
+                          showWrong && "bg-red-500 text-white",
+                          !isSelected && !showCorrect && !showWrong && "bg-muted"
+                        )}
+                      >
+                        {String.fromCharCode(65 + index)}
+                      </span>
+                      <span className="flex-1">{option}</span>
+                      {showCorrect && (
+                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      )}
+                      {showWrong && <XCircle className="h-5 w-5 text-red-500" />}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
-          )}
 
-          {/* Actions */}
-          <div className="pt-4">
+            {/* Explanation inside scrollable area */}
+            {showResult && (
+              <div className="mt-4 p-4 rounded-lg bg-muted/50 border">
+                <p className="font-medium text-sm mb-1">Explanation:</p>
+                <p className="text-sm text-muted-foreground">
+                  {currentQuestion.explanation}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Actions - fixed at bottom */}
+          <div className="shrink-0 border-t pt-4">
             {!showResult ? (
               <Button
                 onClick={handleSubmitAnswer}

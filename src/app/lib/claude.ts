@@ -1,36 +1,15 @@
-import OpenAI from "openai";
-import * as gemini from "./gemini";
-import * as claude from "./claude";
+import Anthropic from "@anthropic-ai/sdk";
+import { GeneratedQuiz, GeneratedPresentation } from "./openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });
-
-const AI_PROVIDER = process.env.AI_PROVIDER || "openai";
-
-export interface GeneratedQuestion {
-  question: string;
-  options: string[];
-  correctAnswer: number;
-  explanation: string;
-}
-
-export interface GeneratedQuiz {
-  title: string;
-  questions: GeneratedQuestion[];
-}
 
 export async function generateQuizFromContent(
   content: string,
   numberOfQuestions: number = 5,
-  difficulty: "easy" | "medium" | "hard" = "medium"
+  difficulty: "easy" | "medium" | "hard" = "medium",
 ): Promise<GeneratedQuiz> {
-  if (AI_PROVIDER === "gemini") {
-    return gemini.generateQuizFromContent(content, numberOfQuestions, difficulty);
-  }
-  if (AI_PROVIDER === "claude") {
-    return claude.generateQuizFromContent(content, numberOfQuestions, difficulty);
-  }
   const difficultyPrompt = {
     easy: "simple and straightforward questions suitable for beginners",
     medium: "moderately challenging questions that test understanding",
@@ -65,67 +44,28 @@ Respond in the following JSON format only (no markdown, no code blocks):
 
 Important: correctAnswer should be the index (0-3) of the correct option.`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are a helpful assistant that creates educational quizzes. Always respond with valid JSON only.",
-      },
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-    temperature: 0.7,
+  const message = await anthropic.messages.create({
+    model: "claude-sonnet-4-20250514",
     max_tokens: 4000,
+    messages: [{ role: "user", content: prompt }],
   });
 
-  const responseText = response.choices[0]?.message?.content?.trim() || "";
+  const responseText =
+    message.content[0].type === "text" ? message.content[0].text : "";
+  const cleanedResponse = responseText
+    .replace(/```json\n?/g, "")
+    .replace(/```\n?/g, "")
+    .trim();
 
-  try {
-    // Remove any potential markdown code blocks
-    const cleanedResponse = responseText
-      .replace(/```json\n?/g, "")
-      .replace(/```\n?/g, "")
-      .trim();
-
-    const quiz = JSON.parse(cleanedResponse) as GeneratedQuiz;
-    return quiz;
-  } catch (error) {
-    console.error("Failed to parse quiz response:", responseText);
-    throw new Error("Failed to generate quiz. Please try again.");
-  }
-}
-
-// Presentation Generation Types and Functions
-
-export interface SlideContent {
-  title: string;
-  content: string;
-  format: "concise" | "detailed" | "bulletpoint";
-}
-
-export interface GeneratedPresentation {
-  title: string;
-  subtitle?: string;
-  slides: SlideContent[];
-  estimatedDuration: string;
+  return JSON.parse(cleanedResponse) as GeneratedQuiz;
 }
 
 export async function generatePresentationOutline(
   content: string,
   numberOfSlides: number = 10,
   style: "professional" | "academic" | "casual" = "professional",
-  format: "concise" | "detailed" | "bulletpoint" = "bulletpoint"
+  format: "concise" | "detailed" | "bulletpoint" = "bulletpoint",
 ): Promise<GeneratedPresentation> {
-  if (AI_PROVIDER === "gemini") {
-    return gemini.generatePresentationOutline(content, numberOfSlides, style, format);
-  }
-  if (AI_PROVIDER === "claude") {
-    return claude.generatePresentationOutline(content, numberOfSlides, style, format);
-  }
   const stylePrompt = {
     professional: "formal and business-appropriate language, suitable for corporate presentations",
     academic: "scholarly tone with emphasis on key concepts and evidence-based points",
@@ -165,37 +105,18 @@ Respond in the following JSON format only (no markdown, no code blocks):
   "estimatedDuration": "X minutes"
 }`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are a helpful assistant that creates professional presentation outlines. Always respond with valid JSON only.",
-      },
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-    temperature: 0.7,
+  const message = await anthropic.messages.create({
+    model: "claude-sonnet-4-20250514",
     max_tokens: 4000,
+    messages: [{ role: "user", content: prompt }],
   });
 
-  const responseText = response.choices[0]?.message?.content?.trim() || "";
+  const responseText =
+    message.content[0].type === "text" ? message.content[0].text : "";
+  const cleanedResponse = responseText
+    .replace(/```json\n?/g, "")
+    .replace(/```\n?/g, "")
+    .trim();
 
-  try {
-    const cleanedResponse = responseText
-      .replace(/```json\n?/g, "")
-      .replace(/```\n?/g, "")
-      .trim();
-
-    const presentation = JSON.parse(cleanedResponse) as GeneratedPresentation;
-    return presentation;
-  } catch (error) {
-    console.error("Failed to parse presentation response:", responseText);
-    throw new Error("Failed to generate presentation. Please try again.");
-  }
+  return JSON.parse(cleanedResponse) as GeneratedPresentation;
 }
-
-export { openai };

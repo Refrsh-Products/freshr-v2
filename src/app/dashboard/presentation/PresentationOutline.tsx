@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Accordion,
   AccordionContent,
@@ -16,20 +10,27 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   ChevronLeft,
   ChevronRight,
   RotateCcw,
   Home,
-  Copy,
-  Check,
   Clock,
   Layers,
-  MessageSquare,
+  Download,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
-import { GeneratedPresentationData, SlideData } from "./PresentationForm";
+import { GeneratedPresentationData } from "./PresentationForm";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import ExportDialog from "./ExportDialog";
+import { PresentationTheme } from "@/lib/presentation-export";
 
 interface PresentationOutlineProps {
   presentation: GeneratedPresentationData;
@@ -42,7 +43,8 @@ export default function PresentationOutline({
 }: PresentationOutlineProps) {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [viewMode, setViewMode] = useState<"slides" | "list">("slides");
-  const [copied, setCopied] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
   const currentSlide = presentation.slides[currentSlideIndex];
 
@@ -58,31 +60,44 @@ export default function PresentationOutline({
     }
   };
 
-  const copyOutlineToClipboard = async () => {
-    const outline = `# ${presentation.title}
-${presentation.subtitle ? `\n*${presentation.subtitle}*\n` : ""}
-Estimated Duration: ${presentation.estimatedDuration}
-
----
-
-${presentation.slides
-  .map(
-    (slide, index) => `## Slide ${index + 1}: ${slide.title}
-
-${slide.bulletPoints.map((point) => `- ${point}`).join("\n")}
-
-${slide.speakerNotes ? `**Speaker Notes:** ${slide.speakerNotes}` : ""}
-`
-  )
-  .join("\n---\n\n")}`;
+  const handleExport = async (theme: PresentationTheme) => {
+    setIsExporting(true);
+    setExportDialogOpen(false);
 
     try {
-      await navigator.clipboard.writeText(outline);
-      setCopied(true);
-      toast.success("Outline copied to clipboard!");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("Failed to copy to clipboard");
+      const response = await fetch("/api/presentation/export", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          presentation,
+          format: "pptx",
+          theme,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Export failed");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${presentation.title.replace(/[^a-z0-9]/gi, "-").toLowerCase()}.pptx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast.success("PowerPoint downloaded successfully!");
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error("Failed to export PowerPoint. Please try again.");
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -125,19 +140,29 @@ ${slide.speakerNotes ? `**Speaker Notes:** ${slide.speakerNotes}` : ""}
           List View
         </Button>
         <div className="flex-1" />
-        <Button variant="outline" size="sm" onClick={copyOutlineToClipboard}>
-          {copied ? (
-            <>
-              <Check className="mr-2 h-4 w-4" />
-              Copied!
-            </>
-          ) : (
-            <>
-              <Copy className="mr-2 h-4 w-4" />
-              Copy Outline
-            </>
-          )}
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" disabled={isExporting}>
+              {isExporting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Exporting...
+                </>
+              ) : (
+                <>
+                  <Download className="mr-2 h-4 w-4" />
+                  Export
+                </>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setExportDialogOpen(true)}>
+              <Download className="mr-2 h-4 w-4" />
+              Export as PowerPoint
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {viewMode === "slides" ? (
@@ -150,28 +175,21 @@ ${slide.speakerNotes ? `**Speaker Notes:** ${slide.speakerNotes}` : ""}
                 Slide {currentSlideIndex + 1} of {presentation.slides.length}
               </div>
               <h2 className="text-2xl font-bold mb-6">{currentSlide.title}</h2>
-              <ul className="space-y-3 flex-1">
-                {currentSlide.bulletPoints.map((point, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <span className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-                    <span className="text-lg">{point}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="flex-1">
+                {currentSlide.format === "bulletpoint" ? (
+                  <ul className="space-y-3">
+                    {currentSlide.content.split("\n").filter(line => line.trim()).map((point, index) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <span className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
+                        <span className="text-lg">{point.replace(/^-\s*/, "")}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-lg leading-relaxed whitespace-pre-wrap">{currentSlide.content}</p>
+                )}
+              </div>
             </div>
-            {currentSlide.speakerNotes && (
-              <CardContent className="border-t bg-muted/30 p-4">
-                <div className="flex items-start gap-2">
-                  <MessageSquare className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground mb-1">
-                      Speaker Notes
-                    </p>
-                    <p className="text-sm">{currentSlide.speakerNotes}</p>
-                  </div>
-                </div>
-              </CardContent>
-            )}
           </Card>
 
           {/* Navigation */}
@@ -230,22 +248,20 @@ ${slide.speakerNotes ? `**Speaker Notes:** ${slide.speakerNotes}` : ""}
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pt-2 pb-4">
-                <ul className="space-y-2 ml-11 mb-4">
-                  {slide.bulletPoints.map((point, pointIndex) => (
-                    <li key={pointIndex} className="flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground mt-2 shrink-0" />
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-                {slide.speakerNotes && (
-                  <div className="ml-11 p-3 bg-muted/50 rounded-lg">
-                    <p className="text-xs font-medium text-muted-foreground mb-1">
-                      Speaker Notes
-                    </p>
-                    <p className="text-sm">{slide.speakerNotes}</p>
-                  </div>
-                )}
+                <div className="ml-11">
+                  {slide.format === "bulletpoint" ? (
+                    <ul className="space-y-2">
+                      {slide.content.split("\n").filter(line => line.trim()).map((point, pointIndex) => (
+                        <li key={pointIndex} className="flex items-start gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground mt-2 shrink-0" />
+                          <span>{point.replace(/^-\s*/, "")}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="leading-relaxed whitespace-pre-wrap">{slide.content}</p>
+                  )}
+                </div>
               </AccordionContent>
             </AccordionItem>
           ))}
@@ -265,6 +281,14 @@ ${slide.speakerNotes ? `**Speaker Notes:** ${slide.speakerNotes}` : ""}
           </Link>
         </Button>
       </div>
+
+      {/* Export Dialog */}
+      <ExportDialog
+        open={exportDialogOpen}
+        onOpenChange={setExportDialogOpen}
+        onExport={handleExport}
+        isExporting={isExporting}
+      />
     </div>
   );
 }
