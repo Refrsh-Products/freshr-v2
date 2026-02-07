@@ -2,10 +2,24 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Check, Zap, Crown } from "lucide-react";
+import { Check, Zap, Crown, LucideProps } from "lucide-react";
 import Link from "next/link";
 
-const plans = [
+type Plan = {
+  name: string;
+  subtitle: string;
+  price: string;
+  period: string;
+  altPrice?: string;
+  features: string[];
+  cta: string;
+  popular: boolean;
+  icon: React.ForwardRefExoticComponent<
+    Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
+  >;
+};
+
+const plans: Plan[] = [
   {
     name: "Early Access",
     subtitle: "Get started now",
@@ -39,7 +53,9 @@ const Pricing = () => {
             PRICING
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            Flexible, affordable prices for<br/>most students
+            Flexible, affordable prices for
+            <br />
+            most students
           </h2>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-6">
             Costs 98% LESS than your course fees.
