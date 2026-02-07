@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -79,7 +80,7 @@ function ResetPasswordContent() {
         if (error) {
           console.error("Session error:", error);
           setError(
-            "Failed to verify your reset link. The link may have expired."
+            "Failed to verify your reset link. The link may have expired.",
           );
           setState("error");
           return;
@@ -91,7 +92,7 @@ function ResetPasswordContent() {
           window.history.replaceState(
             {},
             document.title,
-            window.location.pathname
+            window.location.pathname,
           );
           return;
         }
@@ -117,7 +118,7 @@ function ResetPasswordContent() {
           window.history.replaceState(
             {},
             document.title,
-            window.location.pathname
+            window.location.pathname,
           );
           return;
         }
@@ -143,7 +144,7 @@ function ResetPasswordContent() {
           window.history.replaceState(
             {},
             document.title,
-            window.location.pathname
+            window.location.pathname,
           );
           return;
         }
@@ -151,7 +152,7 @@ function ResetPasswordContent() {
 
       // No valid authentication found
       setError(
-        "No valid reset link found. Please request a new password reset email."
+        "No valid reset link found. Please request a new password reset email.",
       );
       setState("error");
     } catch (err) {
@@ -272,8 +273,8 @@ function ResetPasswordContent() {
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="w-full max-w-md text-center">
           <div className="card-elevated p-8">
-            <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 className="w-8 h-8 text-green-500" />
+            <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="w-8 h-8 text-accent" />
             </div>
             <h1 className="text-2xl font-bold mb-4">Password Reset!</h1>
             <p className="text-muted-foreground mb-6">
@@ -292,12 +293,24 @@ function ResetPasswordContent() {
 
   // Ready state - show password form
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="concrete-texture min-h-screen bg-background flex items-center justify-center p-4 relative">
+      {/* Background orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/20 rounded-full blur-3xl" />
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <Sparkles className="w-8 h-8 text-primary" />
+            <Image
+              src="/FRESHR-LOGO.png"
+              alt="FRESHR"
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-lg"
+            />
             <span className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               FRESHR
             </span>
@@ -371,7 +384,10 @@ function ResetPasswordContent() {
                   type={showConfirmPassword ? "text" : "password"}
                   value={formData.confirmPassword}
                   onChange={(e) =>
-                    setFormData({ ...formData, confirmPassword: e.target.value })
+                    setFormData({
+                      ...formData,
+                      confirmPassword: e.target.value,
+                    })
                   }
                   placeholder="Confirm your new password"
                   className="pr-10"
@@ -396,29 +412,27 @@ function ResetPasswordContent() {
               <p className="text-sm font-medium mb-2">Password must contain:</p>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li
-                  className={
-                    formData.password.length >= 8 ? "text-green-600" : ""
-                  }
+                  className={formData.password.length >= 8 ? "text-accent" : ""}
                 >
                   • At least 8 characters
                 </li>
                 <li
                   className={
-                    /[A-Z]/.test(formData.password) ? "text-green-600" : ""
+                    /[A-Z]/.test(formData.password) ? "text-accent" : ""
                   }
                 >
                   • One uppercase letter
                 </li>
                 <li
                   className={
-                    /[a-z]/.test(formData.password) ? "text-green-600" : ""
+                    /[a-z]/.test(formData.password) ? "text-accent" : ""
                   }
                 >
                   • One lowercase letter
                 </li>
                 <li
                   className={
-                    /[0-9]/.test(formData.password) ? "text-green-600" : ""
+                    /[0-9]/.test(formData.password) ? "text-accent" : ""
                   }
                 >
                   • One number

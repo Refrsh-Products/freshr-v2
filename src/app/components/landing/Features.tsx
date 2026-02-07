@@ -6,30 +6,16 @@ import { Database, FileCheck, BookMarked, GitBranch } from "lucide-react";
 const features = [
   {
     icon: Database,
-    title: "Persistent Vault",
+    title: "Presentation",
     description:
-      "Upload your lecture PDFs once. No more re-uploading every time you want to ask a question.",
+      "Create & edit aura-farming slides, presentation content, speech notes, and directly export them as PPTX.",
     color: "primary",
   },
   {
     icon: FileCheck,
-    title: "Exam-Style Quizzes",
+    title: "Quizzes",
     description:
-      "AI generates MCQs and Short Questions that mimic the difficulty of BD University exams.",
-    color: "accent",
-  },
-  {
-    icon: BookMarked,
-    title: "Traceable Answers",
-    description:
-      'Every explanation cites the exact page and slide it came from. No "AI Hallucinations."',
-    color: "primary",
-  },
-  {
-    icon: GitBranch,
-    title: "Prerequisite Mapping",
-    description:
-      "Struggling with Cell Division? We'll show you if it's because you missed a concept in Chromosomes.",
+      "Be your own judge before exams. Quiz yourself using PDFs and lecture notes with different difficulty levels and question types.",
     color: "accent",
   },
 ];
@@ -49,11 +35,10 @@ const Features = () => {
             FEATURES
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            Study Smarter, Not Longer.
+            Our core features
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to ace your exams, built specifically for
-            Bangladeshi students.
+            Everything you need to ace your university work.
           </p>
         </motion.div>
 

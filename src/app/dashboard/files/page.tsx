@@ -58,7 +58,7 @@ export default function FilesPage() {
     } else {
       // Filter out placeholder files
       const userFiles = (data || []).filter(
-        (file) => !file.name.startsWith(".empty")
+        (file) => !file.name.startsWith(".empty"),
       );
       setFiles(userFiles);
     }
@@ -99,11 +99,15 @@ export default function FilesPage() {
 
         console.log("Files remaining after delete:", checkData);
 
-        const fileStillExists = checkData?.some(f => f.name === fileName);
+        const fileStillExists = checkData?.some((f) => f.name === fileName);
 
         if (fileStillExists) {
-          console.error("FILE STILL EXISTS AFTER DELETE - This is a permissions issue!");
-          toast.error("Delete failed: Permission denied. Check Supabase Storage policies.");
+          console.error(
+            "FILE STILL EXISTS AFTER DELETE - This is a permissions issue!",
+          );
+          toast.error(
+            "Delete failed: Permission denied. Check Supabase Storage policies.",
+          );
         } else {
           console.log("File successfully deleted from storage");
           toast.success("File deleted successfully");
@@ -175,94 +179,94 @@ export default function FilesPage() {
           </Button>
         </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Uploaded Files ({files.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            </div>
-          ) : files.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No files found in storage</p>
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>File Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Size</TableHead>
-                  <TableHead>Uploaded</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {files.map((file) => {
-                  // Extract original filename from storage path
-                  // Format: timestamp__filename or legacy: timestamp-uuid.ext
-                  let displayName = file.name;
-                  if (file.name.includes('__')) {
-                    // New format: timestamp__filename
-                    displayName = file.name.split('__')[1] || file.name;
-                  } else if (file.metadata?.originalName) {
-                    // Has metadata with original name
-                    displayName = file.metadata.originalName;
-                  }
+        <Card>
+          <CardHeader>
+            <CardTitle>Uploaded Files ({files.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : files.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No files found in storage</p>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>File Name</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Size</TableHead>
+                    <TableHead>Uploaded</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {files.map((file) => {
+                    // Extract original filename from storage path
+                    // Format: timestamp__filename or legacy: timestamp-uuid.ext
+                    let displayName = file.name;
+                    if (file.name.includes("__")) {
+                      // New format: timestamp__filename
+                      displayName = file.name.split("__")[1] || file.name;
+                    } else if (file.metadata?.originalName) {
+                      // Has metadata with original name
+                      displayName = file.metadata.originalName;
+                    }
 
-                  // Get file extension
-                  const extension = displayName.split('.').pop()?.toUpperCase() || "Unknown";
+                    // Get file extension
+                    const extension =
+                      displayName.split(".").pop()?.toUpperCase() || "Unknown";
 
-                  // Get mime type from metadata
-                  const mimeType = file.metadata?.mimetype || file.metadata?.type;
+                    // Get mime type from metadata
+                    const mimeType =
+                      file.metadata?.mimetype || file.metadata?.type;
 
-                  // Format file type display
-                  let fileType = extension;
-                  if (mimeType) {
-                    if (mimeType.includes('pdf')) fileType = 'PDF';
-                    else if (mimeType.includes('text')) fileType = 'TXT';
-                  }
+                    // Format file type display
+                    let fileType = extension;
+                    if (mimeType) {
+                      if (mimeType.includes("pdf")) fileType = "PDF";
+                      else if (mimeType.includes("text")) fileType = "TXT";
+                    }
 
-                  return (
-                    <TableRow key={file.name}>
-                      <TableCell className="font-medium">
-                        {displayName}
-                      </TableCell>
-                      <TableCell>
-                        {fileType}
-                      </TableCell>
-                      <TableCell>
-                        {formatFileSize(file.metadata?.size || 0)}
-                      </TableCell>
-                      <TableCell>{formatDate(file.created_at)}</TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDelete(file.name)}
-                          disabled={deleting === file.name}
-                        >
-                          {deleting === file.name ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <>
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
-                            </>
-                          )}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                    return (
+                      <TableRow key={file.name}>
+                        <TableCell className="font-medium">
+                          {displayName}
+                        </TableCell>
+                        <TableCell>{fileType}</TableCell>
+                        <TableCell>
+                          {formatFileSize(file.metadata?.size || 0)}
+                        </TableCell>
+                        <TableCell>{formatDate(file.created_at)}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDelete(file.name)}
+                            disabled={deleting === file.name}
+                          >
+                            {deleting === file.name ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                              </>
+                            )}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
       </main>
     </div>
   );

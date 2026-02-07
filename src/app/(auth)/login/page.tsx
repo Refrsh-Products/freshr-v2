@@ -8,8 +8,14 @@ export default async function LoginPage(props: {
   const error = searchParams.error;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-24 bg-background">
-      <div className="w-full max-w-md space-y-8">
+    <div className="concrete-texture min-h-screen bg-background relative flex flex-col items-center justify-center p-24">
+      {/* Background orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/20 rounded-full blur-3xl" />
+      </div>
+
+      <div className="w-full max-w-md space-y-8 relative z-10">
         <div className="text-center">
           <Link href="/" className="inline-block mb-6">
             <span className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
@@ -24,7 +30,10 @@ export default async function LoginPage(props: {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6">
+        {/* Line accent */}
+        <div className="line-accent"></div>
+
+        <form className="mt-8 space-y-6 card-elevated p-8">
           <div className="-space-y-px rounded-md shadow-sm">
             <div>
               <label htmlFor="email-address" className="sr-only">
@@ -35,7 +44,7 @@ export default async function LoginPage(props: {
                 name="email"
                 type="email"
                 required
-                className="relative block w-full rounded-t-md border-0 py-2.5 px-3 text-foreground bg-card ring-1 ring-inset ring-border placeholder:text-muted-foreground focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+                className="relative block w-full rounded-t-md border-0 py-2.5 px-3 text-foreground bg-card ring-1 ring-inset ring-border placeholder:text-muted-foreground focus:z-10 focus:ring-2 focus:ring-inset focus:ring-accent sm:text-sm sm:leading-6"
                 placeholder="Email address"
               />
             </div>
@@ -48,7 +57,7 @@ export default async function LoginPage(props: {
                 name="password"
                 type="password"
                 required
-                className="relative block w-full rounded-b-md border-0 py-2.5 px-3 text-foreground bg-card ring-1 ring-inset ring-border placeholder:text-muted-foreground focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+                className="relative block w-full rounded-b-md border-0 py-2.5 px-3 text-foreground bg-card ring-1 ring-inset ring-border placeholder:text-muted-foreground focus:z-10 focus:ring-2 focus:ring-inset focus:ring-accent sm:text-sm sm:leading-6"
                 placeholder="Password"
               />
             </div>
@@ -70,13 +79,16 @@ export default async function LoginPage(props: {
             </button>
           </div>
 
-          <div className="text-center pt-4 border-t border-border">
+          {/* Zen divider */}
+          <div className="zen-divider"></div>
+
+          <div className="text-center pt-4">
             <Link
               href="/request-access"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="text-sm text-muted-foreground hover:text-accent transition-colors"
             >
               Don&apos;t have access?{" "}
-              <span className="font-semibold text-primary">
+              <span className="font-semibold text-accent">
                 Request an invite
               </span>
             </Link>

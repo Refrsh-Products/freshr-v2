@@ -7,27 +7,18 @@ import Link from "next/link";
 
 const plans = [
   {
-    name: "Standard",
-    subtitle: "The Starter",
+    name: "Early Access",
+    subtitle: "Get started now",
     price: "৳250",
     period: "/month",
-    features: ["1 PDF Upload", "10 Quizzes per month", "Basic Topic Tracking"],
-    cta: "Get Started",
-    popular: false,
-    icon: Zap,
-  },
-  {
-    name: "Premium",
-    subtitle: "The Pro",
-    price: "৳500",
-    period: "/month",
-    altPrice: "",
     features: [
-      "Unlimited PDF Uploads",
-      "Unlimited Practice Sets",
-      "Full Concept Mastery Map",
+      "Generate unlimited quizzes",
+      "Create unlimited presentations",
+      "Export as PPTX",
+      "Priority support",
+      "Early access to new features",
     ],
-    cta: "Go Premium",
+    cta: "Join the Waitlist",
     popular: true,
     icon: Crown,
   },
@@ -48,24 +39,24 @@ const Pricing = () => {
             PRICING
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            Simple, Student-Friendly Pricing.
+            Flexible, affordable prices for<br/>most students
           </h2>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-6">
-            Accepting bKash and Nagad.
+            Costs 98% LESS than your course fees.
           </p>
 
           {/* Payment logos */}
           <div className="flex items-center justify-center gap-4 flex-wrap">
-            <div className="bg-[#E2136E] text-primary-foreground px-4 py-2 rounded-lg font-bold text-sm">
+            <div className="bg-payment-bkash text-primary-foreground px-4 py-2 rounded-lg font-bold text-sm">
               bKash
             </div>
-            <div className="bg-[#F6921E] text-primary-foreground px-4 py-2 rounded-lg font-bold text-sm">
+            <div className="bg-payment-nagad text-primary-foreground px-4 py-2 rounded-lg font-bold text-sm">
               Nagad
             </div>
           </div>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-3xl mx-auto">
+        <div className="flex justify-center max-w-md mx-auto">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}

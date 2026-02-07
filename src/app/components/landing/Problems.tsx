@@ -6,21 +6,21 @@ import { AlertTriangle, FileQuestion, Link2Off } from "lucide-react";
 const problems = [
   {
     icon: FileQuestion,
-    title: "The One-Set Trap",
+    title: "The dead PDFS",
     description:
-      "You only have one year's worth of sample questions. What happens when the actual exam is different?",
+      "PDFs eating dust after it was dumped by your faculty.",
   },
   {
     icon: Link2Off,
-    title: "The Context Gap",
+    title: "Borrowed GPT",
     description:
-      "Generic AI doesn't know your professor's specific slides or the Bangladesh curriculum.",
+      "Shared ChatGPT accounts that got blocked right after the course ended.",
   },
   {
     icon: AlertTriangle,
-    title: "The Weak Link",
+    title: "The PowerPoint Paralysis",
     description:
-      "You know you're failing \"Organic Chemistry,\" but you don't know which specific mechanism is dragging you down.",
+      "Hours spent formatting slide titles and bullet points instead of actually rehearsing your presentation.",
   },
 ];
 
@@ -35,11 +35,14 @@ const Problems = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            Stop guessing what's on the exam.
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
+            You don't have to be Einstein,
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Sound familiar? You're not alone.
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 text-muted-foreground">
+            you just have to be you
+          </h3>
+          <p className="text-xl font-semibold mb-8">
+            Is this you?
           </p>
         </motion.div>
 

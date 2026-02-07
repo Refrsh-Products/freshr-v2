@@ -178,15 +178,22 @@ export default function PresentationOutline({
               <div className="flex-1">
                 {currentSlide.format === "bulletpoint" ? (
                   <ul className="space-y-3">
-                    {currentSlide.content.split("\n").filter(line => line.trim()).map((point, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <span className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-                        <span className="text-lg">{point.replace(/^-\s*/, "")}</span>
-                      </li>
-                    ))}
+                    {currentSlide.content
+                      .split("\n")
+                      .filter((line) => line.trim())
+                      .map((point, index) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <span className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
+                          <span className="text-lg">
+                            {point.replace(/^-\s*/, "")}
+                          </span>
+                        </li>
+                      ))}
                   </ul>
                 ) : (
-                  <p className="text-lg leading-relaxed whitespace-pre-wrap">{currentSlide.content}</p>
+                  <p className="text-lg leading-relaxed whitespace-pre-wrap">
+                    {currentSlide.content}
+                  </p>
                 )}
               </div>
             </div>
@@ -211,7 +218,7 @@ export default function PresentationOutline({
                     "w-2 h-2 rounded-full transition-colors",
                     index === currentSlideIndex
                       ? "bg-primary"
-                      : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                      : "bg-muted-foreground/30 hover:bg-muted-foreground/50",
                   )}
                 />
               ))}
@@ -251,15 +258,23 @@ export default function PresentationOutline({
                 <div className="ml-11">
                   {slide.format === "bulletpoint" ? (
                     <ul className="space-y-2">
-                      {slide.content.split("\n").filter(line => line.trim()).map((point, pointIndex) => (
-                        <li key={pointIndex} className="flex items-start gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground mt-2 shrink-0" />
-                          <span>{point.replace(/^-\s*/, "")}</span>
-                        </li>
-                      ))}
+                      {String(slide.content || "")
+                        .split("\n")
+                        .filter((line) => line.trim())
+                        .map((point, pointIndex) => (
+                          <li
+                            key={pointIndex}
+                            className="flex items-start gap-2"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground mt-2 shrink-0" />
+                            <span>{point.replace(/^-\s*/, "")}</span>
+                          </li>
+                        ))}
                     </ul>
                   ) : (
-                    <p className="leading-relaxed whitespace-pre-wrap">{slide.content}</p>
+                    <p className="leading-relaxed whitespace-pre-wrap">
+                      {String(slide.content || "")}
+                    </p>
                   )}
                 </div>
               </AccordionContent>
