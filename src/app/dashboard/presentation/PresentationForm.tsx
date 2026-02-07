@@ -50,6 +50,7 @@ export default function PresentationForm({
   const [isLoading, setIsLoading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string>("");
+  const [customPrompt, setCustomPrompt] = useState("");
 
   const isValidFileType = (file: File) => {
     return file.type === "application/pdf" || file.type === "text/plain";
@@ -165,8 +166,8 @@ export default function PresentationForm({
 
           // Sanitize filename for storage
           const sanitizedName = file.name
-            .replace(/[^a-zA-Z0-9._-]/g, '_')
-            .replace(/_{2,}/g, '_');
+            .replace(/[^a-zA-Z0-9._-]/g, "_")
+            .replace(/_{2,}/g, "_");
 
           const timestamp = Date.now();
           const uniqueFileName = `${user.id}/${timestamp}__${sanitizedName}`;
@@ -209,6 +210,7 @@ export default function PresentationForm({
         body: JSON.stringify({
           files: uploadedFiles.length > 0 ? uploadedFiles : null,
           text: text || null,
+          customPrompt: customPrompt || null,
           numberOfSlides: parseInt(numberOfSlides),
           style,
           format,
@@ -221,9 +223,10 @@ export default function PresentationForm({
         throw new Error(data.error || "Failed to generate presentation");
       }
 
-      toast.success("Presentation outline generated!");
+      toast.success("Presentation generated!");
       setFiles([]);
       setText("");
+      setCustomPrompt("");
       onPresentationGenerated(data.presentation);
     } catch (error) {
       toast.error(
@@ -333,6 +336,23 @@ export default function PresentationForm({
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Custom Prompt - shows when files are uploaded */}
+        {files.length > 0 && (
+          <div className="space-y-2 mt-3">
+            <Label htmlFor="custom-prompt">Focus Topic (Optional)</Label>
+            <Textarea
+              id="custom-prompt"
+              placeholder="e.g., Focus only on Chapter 3 about machine learning algorithms..."
+              value={customPrompt}
+              onChange={(e) => setCustomPrompt(e.target.value)}
+              className="min-h-20 resize-none"
+            />
+            <p className="text-xs text-muted-foreground">
+              Specify a topic or section to focus on instead of the entire file
+            </p>
           </div>
         )}
       </div>

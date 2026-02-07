@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -79,7 +80,7 @@ function SetupAccountContent() {
         if (error) {
           console.error("Session error:", error);
           setError(
-            "Failed to verify your invitation. The link may have expired."
+            "Failed to verify your invitation. The link may have expired.",
           );
           setState("error");
           return;
@@ -91,7 +92,7 @@ function SetupAccountContent() {
           window.history.replaceState(
             {},
             document.title,
-            window.location.pathname
+            window.location.pathname,
           );
           return;
         }
@@ -117,7 +118,7 @@ function SetupAccountContent() {
           window.history.replaceState(
             {},
             document.title,
-            window.location.pathname
+            window.location.pathname,
           );
           return;
         }
@@ -143,7 +144,7 @@ function SetupAccountContent() {
           window.history.replaceState(
             {},
             document.title,
-            window.location.pathname
+            window.location.pathname,
           );
           return;
         }
@@ -176,7 +177,7 @@ function SetupAccountContent() {
 
       // No valid authentication found
       setError(
-        "No valid invitation found. Please use the link from your invitation email."
+        "No valid invitation found. Please use the link from your invitation email.",
       );
       setState("error");
     } catch (err) {
@@ -297,8 +298,8 @@ function SetupAccountContent() {
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="w-full max-w-md text-center">
           <div className="card-elevated p-8">
-            <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 className="w-8 h-8 text-green-500" />
+            <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="w-8 h-8 text-accent" />
             </div>
             <h1 className="text-2xl font-bold mb-4">
               Account Setup Complete! 🎉
@@ -327,9 +328,13 @@ function SetupAccountContent() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-primary-foreground" />
-            </div>
+            <Image
+              src="/FRESHR-LOGO.png"
+              alt="FRESHR"
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-xl"
+            />
             <span className="text-2xl font-bold">FRESHR</span>
           </Link>
 

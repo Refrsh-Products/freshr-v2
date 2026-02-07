@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
+import Image from "next/image";
 
 const Footer = () => {
   return (
@@ -9,9 +9,13 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Logo */}
           <a href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-primary-foreground" />
-            </div>
+            <Image
+              src="/FRESHR-LOGO.png"
+              alt="FRESHR"
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-lg"
+            />
             <span className="text-lg font-bold">FRESHR</span>
           </a>
 
@@ -39,7 +43,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className="text-sm text-muted-foreground">
-            © 2026 FRESHR. Made with 💚 in Bangladesh.
+            © 2026 FRESHR. Made with 💚 by REFRSH
           </p>
         </div>
       </div>

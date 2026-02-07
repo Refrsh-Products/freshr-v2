@@ -22,7 +22,7 @@ export default function PresentationPageClient() {
   const [mode, setMode] = useState<"create" | "view">("create");
 
   const handlePresentationGenerated = (
-    generatedPresentation: GeneratedPresentationData
+    generatedPresentation: GeneratedPresentationData,
   ) => {
     setPresentation(generatedPresentation);
     setMode("view");

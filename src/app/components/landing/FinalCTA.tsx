@@ -16,30 +16,20 @@ const FinalCTA = () => {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-2 mb-6">
-            <ShieldCheck className="w-4 h-4 text-accent" />
-            <span className="text-sm font-medium text-foreground/80">
-              Study ethically, ace genuinely
-            </span>
-          </div>
-
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-balance">
-            Stop wasting time on "Assignment Generators" that get you in
-            trouble.{" "}
             <span className="gradient-text">
-              Start mastering your course material.
+              Join the Waitlist Now
             </span>
           </h2>
 
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of Bangladeshi students who are studying smarter with
-            FRESHR
+            Be among the first to experience the future of university learning. Save your semester with FRESHR.
           </p>
 
           <Link href="/join">
-            <Button variant="accent" size="xl" className="glow-accent">
+            <Button variant="hero" size="xl" className="glow-primary">
               <Upload className="w-5 h-5" />
-              Join the Waitlist Now
+              Join the Waitlist
             </Button>
           </Link>
         </motion.div>

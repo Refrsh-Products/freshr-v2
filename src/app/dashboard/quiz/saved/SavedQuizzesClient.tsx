@@ -107,7 +107,7 @@ export default function SavedQuizzesClient() {
         difficulty: quiz.difficulty,
         createdAt: quiz.created_at,
         isRetry: true,
-      })
+      }),
     );
     router.push("/dashboard/quiz?retry=true");
   };
@@ -239,7 +239,7 @@ export default function SavedQuizzesClient() {
                       variant="outline"
                       className={cn(
                         "capitalize",
-                        getDifficultyColor(quiz.difficulty)
+                        getDifficultyColor(quiz.difficulty),
                       )}
                     >
                       {quiz.difficulty || "medium"}
