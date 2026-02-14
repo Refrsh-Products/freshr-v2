@@ -17,17 +17,20 @@ const FinalCTA = () => {
           className="text-center"
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-balance">
-            <span className="gradient-text">
-              Join the Waitlist Now
-            </span>
+            <span className="gradient-text">Join the Waitlist Now</span>
           </h2>
 
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Be among the first to experience the future of university learning. Save your semester with FRESHR.
+            Be among the first to experience the future of university learning.
+            Save your semester with FRESHR.
           </p>
 
           <Link href="/join">
-            <Button variant="hero" size="xl" className="glow-primary">
+            <Button
+              variant="hero"
+              size="xl"
+              className="glow-primary cursor-pointer"
+            >
               <Upload className="w-5 h-5" />
               Join the Waitlist
             </Button>

@@ -67,6 +67,16 @@ export interface DbFavoriteQuiz {
   quiz?: DbQuiz;
 }
 
+export interface DbQuizSession {
+  id: string;
+  user_id: string;
+  quiz_id: string | null;
+  allocated_time_seconds: number;
+  started_at: string;
+  completed_at: string | null;
+  is_completed: boolean;
+}
+
 // Analytics Types
 export interface QuizAnalytics {
   totalQuizzesTaken: number;

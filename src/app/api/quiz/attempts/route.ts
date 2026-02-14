@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
       percentage,
       answers,
       timeTakenSeconds,
+      sessionId,
     } = body;
 
     if (
@@ -36,6 +37,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Server-side timing validation for timed sessions
+    const GRACE_PERIOD_SECONDS = 30;
+    let isLateSubmission = false;
+
+    if (sessionId) {
+      const { data: session, error: sessionError } = await supabase
+        .from("quiz_sessions")
+        .select("*")
+        .eq("id", sessionId)
+        .eq("user_id", user.id)
+        .single();
+
+      if (sessionError || !session) {
+        return NextResponse.json(
+          { error: "Invalid session" },
+          { status: 400 }
+        );
+      }
+
+      const deadlineMs =
+        new Date(session.started_at).getTime() +
+        (session.allocated_time_seconds + GRACE_PERIOD_SECONDS) * 1000;
+
+      if (Date.now() > deadlineMs) {
+        isLateSubmission = true;
+      }
+
+      // Mark the session as completed
+      await supabase
+        .from("quiz_sessions")
+        .update({ is_completed: true, completed_at: new Date().toISOString() })
+        .eq("id", sessionId);
+    }
+
     const { data, error } = await supabase
       .from("quiz_attempts")
       .insert({
@@ -46,6 +81,8 @@ export async function POST(request: NextRequest) {
         percentage,
         answers,
         time_taken_seconds: timeTakenSeconds || null,
+        session_id: sessionId || null,
+        is_late_submission: isLateSubmission,
       })
       .select()
       .single();
@@ -58,7 +95,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ success: true, attempt: data });
+    return NextResponse.json({ success: true, attempt: data, isLateSubmission });
   } catch (error) {
     console.error("Attempt save error:", error);
     return NextResponse.json(

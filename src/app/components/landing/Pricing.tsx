@@ -138,7 +138,7 @@ const Pricing = () => {
                 <Button
                   variant={plan.popular ? "hero" : "outline"}
                   size="lg"
-                  className="w-full"
+                  className="w-full cursor-pointer"
                 >
                   {plan.cta}
                 </Button>
