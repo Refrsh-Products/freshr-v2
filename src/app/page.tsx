@@ -3,7 +3,6 @@ import Hero from "@/components/landing/Hero";
 import Problems from "@/components/landing/Problems";
 import FounderStory from "@/components/landing/FounderStory";
 import Features from "@/components/landing/Features";
-import FeatureVote from "@/components/landing/FeatureVote";
 import Testimonial from "@/components/landing/Testimonial";
 import Pricing from "@/components/landing/Pricing";
 import FinalCTA from "@/components/landing/FinalCTA";
@@ -20,7 +19,6 @@ export default function Home() {
         <section id="features">
           <Features />
         </section>
-        <FeatureVote />
         <Testimonial />
         <section id="pricing">
           <Pricing />

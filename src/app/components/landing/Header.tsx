@@ -46,12 +46,12 @@ const Header = () => {
               Pricing
             </a>
             <Link href="/login">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="cursor-pointer">
                 Log In
               </Button>
             </Link>
             <Link href="/join">
-              <Button variant="hero" size="sm">
+              <Button variant="hero" size="sm" className="cursor-pointer">
                 Get Access
               </Button>
             </Link>

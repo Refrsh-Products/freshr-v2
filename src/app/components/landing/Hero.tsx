@@ -65,20 +65,12 @@ const Hero = () => {
               <Link href="/join" className="w-full sm:w-auto">
                 <Button
                   size="lg"
-                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground group"
+                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground group cursor-pointer"
                 >
                   Get Early Access
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full sm:w-auto border-primary/20 hover:border-accent/40"
-              >
-                <BookOpen className="w-4 h-4 mr-2" />
-                See How It Works
-              </Button>
             </motion.div>
 
             {/* Social proof - community */}
@@ -121,7 +113,9 @@ const Hero = () => {
                   <div className="w-2.5 h-2.5 rounded-full bg-secondary" />
                   <div className="w-2.5 h-2.5 rounded-full bg-primary/20" />
                 </div>
-                <div className="text-xs text-muted-foreground font-mono">FRESHR</div>
+                <div className="text-xs text-muted-foreground font-mono">
+                  FRESHR
+                </div>
               </div>
 
               {/* Content placeholder - architectural */}

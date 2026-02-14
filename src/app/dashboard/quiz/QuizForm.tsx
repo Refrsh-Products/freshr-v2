@@ -1,15 +1,13 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
-  ArrowLeft,
   Upload,
   FileText,
   Loader2,
   X,
   Sparkles,
+  Timer,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -49,6 +48,7 @@ export interface GeneratedQuizData {
   }[];
   createdAt: string;
   userId: string;
+  timedConfig?: { allocatedTimeSeconds: number } | null;
 }
 
 export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
@@ -62,6 +62,10 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
   const [dragActive, setDragActive] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string>("");
   const [customPrompt, setCustomPrompt] = useState("");
+  const [timerEnabled, setTimerEnabled] = useState(false);
+  const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
+  const [isCustomTime, setIsCustomTime] = useState(false);
+  const [customMinutes, setCustomMinutes] = useState("");
 
   const isValidFileType = (file: File) => {
     return file.type === "application/pdf" || file.type === "text/plain";
@@ -232,10 +236,18 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
         throw new Error(data.error || "Failed to generate quiz");
       }
 
+      const allocatedMinutes = isCustomTime
+        ? parseInt(customMinutes)
+        : selectedPreset;
+      const timedConfig =
+        timerEnabled && allocatedMinutes && allocatedMinutes >= 1
+          ? { allocatedTimeSeconds: allocatedMinutes * 60 }
+          : null;
+
       toast.success("Quiz generated successfully!");
       setFiles([]);
       setText("");
-      onQuizGenerated(data.quiz);
+      onQuizGenerated({ ...data.quiz, timedConfig });
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to generate quiz",
@@ -430,6 +442,102 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      {/* Timer Configuration */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Timer className="h-4 w-4 text-muted-foreground" />
+            <Label className="cursor-pointer select-none">Enable Timer</Label>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={timerEnabled}
+            onClick={() => {
+              setTimerEnabled(!timerEnabled);
+              if (timerEnabled) {
+                setSelectedPreset(null);
+                setIsCustomTime(false);
+                setCustomMinutes("");
+              }
+            }}
+            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+              timerEnabled ? "bg-primary" : "bg-input"
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-background shadow-lg ring-0 transition-transform ${
+                timerEnabled ? "translate-x-4" : "translate-x-0"
+              }`}
+            />
+          </button>
+        </div>
+
+        {timerEnabled && (
+          <div className="space-y-3 pl-0">
+            <p className="text-xs text-muted-foreground">
+              Select a time limit for your quiz
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {[5, 15, 30].map((minutes) => (
+                <button
+                  key={minutes}
+                  type="button"
+                  onClick={() => {
+                    setSelectedPreset(minutes);
+                    setIsCustomTime(false);
+                    setCustomMinutes("");
+                  }}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all ${
+                    selectedPreset === minutes && !isCustomTime
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border hover:border-primary/50 hover:bg-primary/5"
+                  }`}
+                >
+                  {minutes} min
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCustomTime(true);
+                  setSelectedPreset(null);
+                }}
+                className={`px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all ${
+                  isCustomTime
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border hover:border-primary/50 hover:bg-primary/5"
+                }`}
+              >
+                Custom
+              </button>
+            </div>
+
+            {isCustomTime && (
+              <div className="flex items-center gap-2 mt-2">
+                <Input
+                  type="number"
+                  min="1"
+                  max="180"
+                  placeholder="e.g. 45"
+                  value={customMinutes}
+                  onChange={(e) => setCustomMinutes(e.target.value)}
+                  className="w-28"
+                />
+                <span className="text-sm text-muted-foreground">minutes</span>
+                {customMinutes &&
+                  (parseInt(customMinutes) < 1 ||
+                    parseInt(customMinutes) > 180) && (
+                    <span className="text-xs text-destructive">
+                      Must be 1–180 min
+                    </span>
+                  )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Submit Button */}
