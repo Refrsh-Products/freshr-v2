@@ -149,7 +149,7 @@ export default function HomeContent({ user }: HomeContentProps) {
                     <li>✓ Multiple choice</li>
                     <li>✓ Track your progress</li>
                   </ul>
-                  <Button className="w-full" variant="hero">
+                  <Button className="w-full cursor-pointer" variant="hero">
                     Start Quiz
                   </Button>
                 </CardContent>
@@ -177,7 +177,7 @@ export default function HomeContent({ user }: HomeContentProps) {
                     <li>✓ Auto-generated layouts</li>
                     <li>✓ Speaker Notes</li>
                   </ul>
-                  <Button className="w-full" variant="accent">
+                  <Button className="w-full cursor-pointer" variant="accent">
                     Start Presentation
                   </Button>
                 </CardContent>

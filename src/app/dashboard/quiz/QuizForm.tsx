@@ -1,14 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import {
-  Upload,
-  FileText,
-  Loader2,
-  X,
-  Sparkles,
-  Timer,
-} from "lucide-react";
+import { Upload, FileText, Loader2, X, Sparkles, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -148,6 +141,14 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
     if (files.length === 0 && !text.trim()) {
       toast.error("Please upload files or enter some text");
       return;
+    }
+
+    if (timerEnabled) {
+      const minutes = isCustomTime ? parseInt(customMinutes) : selectedPreset;
+      if (!minutes || minutes < 1) {
+        toast.error("Please set a time for the timer or disable it");
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -449,7 +450,7 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Timer className="h-4 w-4 text-muted-foreground" />
-            <Label className="cursor-pointer select-none">Enable Timer</Label>
+            <Label className="select-none">Set Timer</Label>
           </div>
           <button
             type="button"
@@ -490,7 +491,7 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
                     setIsCustomTime(false);
                     setCustomMinutes("");
                   }}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all ${
+                  className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all ${
                     selectedPreset === minutes && !isCustomTime
                       ? "border-primary bg-primary text-primary-foreground"
                       : "border-border hover:border-primary/50 hover:bg-primary/5"
@@ -505,7 +506,7 @@ export default function QuizForm({ onQuizGenerated }: QuizFormProps) {
                   setIsCustomTime(true);
                   setSelectedPreset(null);
                 }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all ${
+                className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all ${
                   isCustomTime
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border hover:border-primary/50 hover:bg-primary/5"
