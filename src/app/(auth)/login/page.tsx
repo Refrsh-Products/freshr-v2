@@ -1,5 +1,6 @@
 import { login } from "../actions";
 import Link from "next/link";
+import SubmitButton from "./SubmitButton";
 
 export default async function LoginPage(props: {
   searchParams: Promise<{ error?: string }>;
@@ -33,7 +34,7 @@ export default async function LoginPage(props: {
         {/* Line accent */}
         <div className="line-accent"></div>
 
-        <form className="mt-8 space-y-6 card-elevated p-8">
+        <form action={login} className="mt-8 space-y-6 card-elevated p-8">
           <div className="-space-y-px rounded-md shadow-sm">
             <div>
               <label htmlFor="email-address" className="sr-only">
@@ -70,13 +71,7 @@ export default async function LoginPage(props: {
           )}
 
           <div>
-            <button
-              formAction={login}
-              type="submit"
-              className="group relative flex w-full justify-center rounded-md bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors cursor-pointer"
-            >
-              Sign in
-            </button>
+            <SubmitButton />
           </div>
 
           {/* Zen divider */}
