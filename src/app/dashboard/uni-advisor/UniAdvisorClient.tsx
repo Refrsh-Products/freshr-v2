@@ -18,6 +18,8 @@ import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import SchoolRoundedIcon from "@mui/icons-material/SchoolRounded";
 import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
+import { useRouter } from "next/navigation";
 
 interface Source {
   content: string;
@@ -122,6 +124,7 @@ const EXAMPLE_QUESTIONS = [
 ];
 
 export default function UniAdvisorPage() {
+  const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -268,6 +271,15 @@ export default function UniAdvisorPage() {
           flexShrink: 0,
         }}
       >
+        <Tooltip title="Back to home" placement="right">
+          <IconButton
+            onClick={() => router.push("/home")}
+            size="small"
+            sx={{ color: "text.secondary", "&:hover": { color: "text.primary" } }}
+          >
+            <ArrowBackRoundedIcon sx={{ fontSize: 20 }} />
+          </IconButton>
+        </Tooltip>
         <Avatar
           sx={{
             bgcolor: "primary.main",
