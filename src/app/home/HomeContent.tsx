@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   FileQuestion,
   Presentation,
+  GraduationCap,
   User as UserIcon,
   Settings,
   LogOut,
@@ -181,6 +182,28 @@ export default function HomeContent({ user }: HomeContentProps) {
                     Start Presentation
                   </Button>
                 </CardContent>
+              </Card>
+            </Link>
+          </div>
+
+          {/* Uni Advisor Card */}
+          <div className="mt-6">
+            <Link href="/dashboard/uni-advisor" className="group">
+              <Card className="transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/50 hover:-translate-y-1">
+                <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors shrink-0">
+                    <GraduationCap className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl">IUB Advisor</CardTitle>
+                    <CardDescription>
+                      Ask anything about Independent University, Bangladesh — programs, admissions, fees, and more.
+                    </CardDescription>
+                  </div>
+                  <Button className="ml-auto cursor-pointer shrink-0" variant="outline">
+                    Open Chat
+                  </Button>
+                </CardHeader>
               </Card>
             </Link>
           </div>
