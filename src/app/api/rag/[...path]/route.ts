@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 
 const UNIRAG_BASE_URL = process.env.UNIRAG_BASE_URL;
 const UNIRAG_INTERNAL_KEY = process.env.UNIRAG_INTERNAL_KEY;
@@ -9,17 +8,7 @@ async function forwardRequest(
   params: Promise<{ path: string[] }>,
   method: "GET" | "POST",
 ) {
-  // 1. Validate Supabase session
-  const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  // 2. Build the forwarded URL
+  // Build the forwarded URL
   const { path: segments } = await params;
   const path = segments.join("/");
   const url = new URL(`${UNIRAG_BASE_URL}/api/${path}`);
