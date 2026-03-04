@@ -273,7 +273,7 @@ export default function UniAdvisorPage() {
       >
         <Tooltip title="Back to home" placement="right">
           <IconButton
-            onClick={() => router.push("/home")}
+            onClick={() => router.back()}
             size="small"
             sx={{ color: "text.secondary", "&:hover": { color: "text.primary" } }}
           >

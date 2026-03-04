@@ -45,6 +45,12 @@ const Header = () => {
             >
               Pricing
             </a>
+            <Link
+              href="/dashboard/uni-advisor"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              IUB Advisor
+            </Link>
             <Link href="/login">
               <Button variant="ghost" size="sm" className="cursor-pointer">
                 Log In
@@ -93,6 +99,13 @@ const Header = () => {
               >
                 Pricing
               </a>
+              <Link
+                href="/dashboard/uni-advisor"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                IUB Advisor
+              </Link>
               <div className="flex flex-col gap-2 pt-2">
                 <Link href="/login">
                   <Button
